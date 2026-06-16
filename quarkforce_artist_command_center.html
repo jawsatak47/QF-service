@@ -1,0 +1,448 @@
+
+<h2 class="sr-only">QuarkForce Artist Command Center — opportunity tracker, mural pitch generator, and outreach CRM</h2>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+
+.app { display: flex; height: 600px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; background: var(--color-background-primary); }
+
+.sidebar { width: 200px; min-width: 200px; border-right: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; padding: 16px 0; background: var(--color-background-secondary); }
+
+.logo { padding: 0 16px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 8px; }
+.logo-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.logo-sub { font-size: 11px; color: var(--color-text-tertiary); }
+
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13px; color: var(--color-text-secondary); cursor: pointer; border-radius: 0; transition: all 0.1s; }
+.nav-item:hover { background: var(--color-background-primary); color: var(--color-text-primary); }
+.nav-item.active { background: var(--color-background-primary); color: var(--color-text-primary); font-weight: 500; border-right: 2px solid #7F77DD; }
+.nav-item i { font-size: 16px; }
+.nav-section { font-size: 10px; color: var(--color-text-tertiary); padding: 12px 16px 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.content { flex: 1; overflow-y: auto; }
+
+.panel { display: none; padding: 20px; height: 100%; }
+.panel.active { display: block; }
+
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.panel-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+
+.btn { padding: 7px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 13px; cursor: pointer; background: var(--color-background-primary); color: var(--color-text-primary); display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { background: var(--color-background-secondary); }
+.btn-primary { background: #7F77DD; border-color: #534AB7; color: #fff; }
+.btn-primary:hover { background: #534AB7; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
+.stat-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.stat-sub { font-size: 11px; color: var(--color-text-tertiary); }
+
+.opportunity-list { display: flex; flex-direction: column; gap: 8px; }
+.opp-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; cursor: pointer; }
+.opp-card:hover { border-color: var(--color-border-secondary); }
+.opp-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.opp-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.opp-org { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.opp-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
+.badge-mural { background: #EEEDFE; color: #3C3489; }
+.badge-grant { background: #E1F5EE; color: #085041; }
+.badge-comp { background: #FAEEDA; color: #633806; }
+.badge-vendor { background: #FAECE7; color: #4A1B0C; }
+.badge-status-new { background: #E6F1FB; color: #0C447C; }
+.badge-status-applied { background: #EAF3DE; color: #27500A; }
+.badge-status-watching { background: #FAEEDA; color: #633806; }
+.deadline { font-size: 11px; color: var(--color-text-tertiary); display: flex; align-items: center; gap: 4px; }
+.deadline.soon { color: #A32D2D; }
+.deadline i { font-size: 13px; }
+
+.filter-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.filter-chip { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-tertiary); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); }
+.filter-chip.on { background: #EEEDFE; border-color: #AFA9EC; color: #3C3489; }
+
+.pipeline-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; height: calc(100% - 60px); }
+.pipeline-col { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.pipeline-col-header { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.pipeline-col-count { background: var(--color-background-secondary); border-radius: 20px; padding: 2px 7px; font-size: 11px; }
+.pipeline-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px; font-size: 12px; }
+.pipeline-card-title { font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.pipeline-card-org { color: var(--color-text-secondary); }
+.pipeline-card-deadline { color: var(--color-text-tertiary); font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+
+.pitch-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; }
+.form-input { padding: 7px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 13px; background: var(--color-background-primary); color: var(--color-text-primary); font-family: var(--font-sans); }
+.form-input:focus { outline: none; border-color: #7F77DD; }
+select.form-input { cursor: pointer; }
+textarea.form-input { resize: vertical; min-height: 70px; }
+
+.price-result { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px; margin-top: 12px; }
+.price-breakdown { display: flex; flex-direction: column; gap: 6px; }
+.price-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--color-text-secondary); }
+.price-row.total { font-weight: 500; color: var(--color-text-primary); border-top: 0.5px solid var(--color-border-tertiary); padding-top: 8px; margin-top: 4px; font-size: 15px; }
+.price-label { color: var(--color-text-secondary); }
+.price-val { color: var(--color-text-primary); }
+
+.ai-section { margin-top: 12px; border: 0.5px solid #AFA9EC; border-radius: var(--border-radius-md); padding: 12px; background: #EEEDFE20; }
+.ai-label { font-size: 11px; color: #534AB7; font-weight: 500; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.ai-output { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; min-height: 60px; }
+.ai-loading { color: var(--color-text-tertiary); font-size: 13px; font-style: italic; }
+
+.crm-list { display: flex; flex-direction: column; gap: 8px; }
+.crm-card { display: flex; align-items: center; gap: 12px; padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); }
+.crm-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+.crm-info { flex: 1; }
+.crm-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.crm-role { font-size: 12px; color: var(--color-text-secondary); }
+.crm-actions { display: flex; gap: 6px; }
+.crm-chip { font-size: 11px; padding: 3px 8px; border-radius: 20px; }
+
+.score-card { text-align: center; padding: 20px; }
+.score-big { font-size: 56px; font-weight: 500; color: #7F77DD; line-height: 1; }
+.score-label { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+.score-bar-wrap { margin: 20px 0; }
+.score-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+.score-bar { height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 3px; background: #7F77DD; }
+.achievements { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.achievement { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+.ach-icon { font-size: 20px; width: 36px; height: 36px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; background: #EEEDFE; color: #534AB7; }
+.ach-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.ach-pts { font-size: 11px; color: var(--color-text-tertiary); }
+</style>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-name">QuarkForce</div>
+      <div class="logo-sub">Artist Command Center</div>
+    </div>
+    <div class="nav-section">Discover</div>
+    <div class="nav-item active" onclick="show('radar')"><i class="ti ti-radar" aria-hidden="true"></i> Opportunity Radar</div>
+    <div class="nav-section">Manage</div>
+    <div class="nav-item" onclick="show('pipeline')"><i class="ti ti-layout-kanban" aria-hidden="true"></i> Pipeline</div>
+    <div class="nav-item" onclick="show('crm')"><i class="ti ti-address-book" aria-hidden="true"></i> Contacts</div>
+    <div class="nav-section">Create</div>
+    <div class="nav-item" onclick="show('pitch')"><i class="ti ti-file-description" aria-hidden="true"></i> Pitch Builder</div>
+    <div class="nav-section">Me</div>
+    <div class="nav-item" onclick="show('score')"><i class="ti ti-trophy" aria-hidden="true"></i> Artist Score</div>
+  </div>
+
+  <div class="content">
+
+    <div id="panel-radar" class="panel active">
+      <div class="panel-header">
+        <span class="panel-title">Opportunity Radar</span>
+        <button class="btn btn-primary" onclick="sendPrompt('Generate 5 new mural and artist opportunities near Medford Oregon for me to add to my radar ↗')"><i class="ti ti-refresh" aria-hidden="true"></i> Find new</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Tracked</div><div class="stat-value">12</div><div class="stat-sub">opportunities</div></div>
+        <div class="stat-card"><div class="stat-label">Deadlines</div><div class="stat-value">3</div><div class="stat-sub">this month</div></div>
+        <div class="stat-card"><div class="stat-label">Applied</div><div class="stat-value">4</div><div class="stat-sub">this quarter</div></div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-chip on">All</div>
+        <div class="filter-chip">Mural</div>
+        <div class="filter-chip">Grant</div>
+        <div class="filter-chip">Vendor</div>
+        <div class="filter-chip">Competition</div>
+        <div class="filter-chip">Residency</div>
+      </div>
+      <div class="opportunity-list">
+        <div class="opp-card" onclick="sendPrompt('Tell me more about the City of Medford Public Art mural call and how I should approach the proposal as QuarkForce ↗')">
+          <div class="opp-top">
+            <div>
+              <div class="opp-title">Public Art Mural Call — Downtown Corridor</div>
+              <div class="opp-org">City of Medford, OR</div>
+            </div>
+            <span class="badge badge-status-new">New</span>
+          </div>
+          <div class="opp-meta">
+            <span class="badge badge-mural"><i class="ti ti-wall" aria-hidden="true"></i> Mural</span>
+            <span class="deadline soon"><i class="ti ti-clock" aria-hidden="true"></i> Due Jul 15</span>
+            <span class="deadline"><i class="ti ti-currency-dollar" aria-hidden="true"></i> $3,500–$8,000</span>
+          </div>
+        </div>
+        <div class="opp-card" onclick="sendPrompt('What should I know about Oregon Arts Commission grants and do I qualify? ↗')">
+          <div class="opp-top">
+            <div>
+              <div class="opp-title">Individual Artist Fellowship</div>
+              <div class="opp-org">Oregon Arts Commission</div>
+            </div>
+            <span class="badge badge-status-watching">Watching</span>
+          </div>
+          <div class="opp-meta">
+            <span class="badge badge-grant"><i class="ti ti-plant" aria-hidden="true"></i> Grant</span>
+            <span class="deadline"><i class="ti ti-clock" aria-hidden="true"></i> Due Sep 1</span>
+            <span class="deadline"><i class="ti ti-currency-dollar" aria-hidden="true"></i> Up to $7,500</span>
+          </div>
+        </div>
+        <div class="opp-card" onclick="sendPrompt('Help me prep a MonsTober themed vendor booth concept for Rogue Valley Art Festival ↗')">
+          <div class="opp-top">
+            <div>
+              <div class="opp-title">Rogue Valley Art Festival — Vendor Booths</div>
+              <div class="opp-org">RVAF, Medford OR</div>
+            </div>
+            <span class="badge badge-status-applied">Applied</span>
+          </div>
+          <div class="opp-meta">
+            <span class="badge badge-vendor"><i class="ti ti-building-store" aria-hidden="true"></i> Vendor</span>
+            <span class="deadline"><i class="ti ti-clock" aria-hidden="true"></i> Aug 12–14</span>
+          </div>
+        </div>
+        <div class="opp-card" onclick="sendPrompt('How should I approach Pow Wow! Portland mural festival as a QuarkForce brand submission? ↗')">
+          <div class="opp-top">
+            <div>
+              <div class="opp-title">Pow Wow! Portland — Mural Festival</div>
+              <div class="opp-org">Portland, OR</div>
+            </div>
+            <span class="badge badge-status-new">New</span>
+          </div>
+          <div class="opp-meta">
+            <span class="badge badge-mural"><i class="ti ti-wall" aria-hidden="true"></i> Mural</span>
+            <span class="deadline soon"><i class="ti ti-clock" aria-hidden="true"></i> Due Jul 3</span>
+            <span class="deadline"><i class="ti ti-currency-dollar" aria-hidden="true"></i> Paid + wall</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-pipeline" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Opportunity Pipeline</span>
+        <button class="btn"><i class="ti ti-plus" aria-hidden="true"></i> Add</button>
+      </div>
+      <div class="pipeline-board">
+        <div class="pipeline-col">
+          <div class="pipeline-col-header">Interested <span class="pipeline-col-count">3</span></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">Pow Wow! Portland</div><div class="pipeline-card-org">Portland, OR</div><div class="pipeline-card-deadline"><i class="ti ti-clock" aria-hidden="true"></i> Jul 3</div></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">NEA Our Town Grant</div><div class="pipeline-card-org">Federal</div><div class="pipeline-card-deadline"><i class="ti ti-clock" aria-hidden="true"></i> Aug 8</div></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">Klamath Falls Mural</div><div class="pipeline-card-org">City project</div><div class="pipeline-card-deadline"><i class="ti ti-clock" aria-hidden="true"></i> Sep 15</div></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-header">Applying <span class="pipeline-col-count">2</span></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">Downtown Corridor Mural</div><div class="pipeline-card-org">City of Medford</div><div class="pipeline-card-deadline"><i class="ti ti-clock" aria-hidden="true"></i> Jul 15</div></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">RVAF Vendor Booth</div><div class="pipeline-card-org">Medford OR</div><div class="pipeline-card-deadline"><i class="ti ti-clock" aria-hidden="true"></i> Aug 12</div></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-header">Submitted <span class="pipeline-col-count">2</span></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">Barbershop Mural</div><div class="pipeline-card-org">Private client</div><div class="pipeline-card-deadline"><i class="ti ti-check" aria-hidden="true"></i> Sent Jun 1</div></div>
+          <div class="pipeline-card"><div class="pipeline-card-title">OAC Fellowship</div><div class="pipeline-card-org">Oregon Arts Comm.</div><div class="pipeline-card-deadline"><i class="ti ti-check" aria-hidden="true"></i> Sent May 20</div></div>
+        </div>
+        <div class="pipeline-col">
+          <div class="pipeline-col-header">Won <span class="pipeline-col-count">1</span></div>
+          <div class="pipeline-card" style="border-left: 2px solid #1D9E75;"><div class="pipeline-card-title">Canvas Wars Year 1</div><div class="pipeline-card-org">Timeless Treasures</div><div class="pipeline-card-deadline" style="color:#1D9E75;"><i class="ti ti-trophy" aria-hidden="true"></i> Completed!</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-pitch" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Mural Pitch Builder</span>
+        <button class="btn btn-primary" onclick="generatePitch()"><i class="ti ti-sparkles" aria-hidden="true"></i> Generate pitch ↗</button>
+      </div>
+      <div class="pitch-form">
+        <div class="form-group">
+          <label class="form-label">Client / Organization</label>
+          <input id="client" class="form-input" placeholder="City of Medford" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Project type</label>
+          <select id="ptype" class="form-input">
+            <option>Exterior building mural</option>
+            <option>Interior mural</option>
+            <option>Street art installation</option>
+            <option>Gold leaf signage</option>
+            <option>Public art commission</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Wall width (ft)</label>
+          <input id="width" class="form-input" type="number" value="20" oninput="calcPrice()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Wall height (ft)</label>
+          <input id="height" class="form-input" type="number" value="10" oninput="calcPrice()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Surface condition</label>
+          <select id="surface" class="form-input" onchange="calcPrice()">
+            <option value="1">Good — ready to paint</option>
+            <option value="1.15">Fair — minor prep needed</option>
+            <option value="1.3">Poor — heavy prep / brick</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Design complexity</label>
+          <select id="complexity" class="form-input" onchange="calcPrice()">
+            <option value="1">Simple geometric / lettering</option>
+            <option value="1.4">Characters / illustration</option>
+            <option value="1.75">Detailed fine art / portraits</option>
+            <option value="2.1">Gold leaf / specialty finish</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Design concept (brief description)</label>
+          <textarea id="concept" class="form-input" placeholder="QuarkForce characters in a street art / graffiti style celebrating local culture..."></textarea>
+        </div>
+      </div>
+      <div class="price-result" id="priceResult">
+        <div class="price-breakdown">
+          <div class="price-row"><span class="price-label">Sq footage</span><span class="price-val" id="sqft">200 sq ft</span></div>
+          <div class="price-row"><span class="price-label">Base rate (design complexity)</span><span class="price-val" id="base">$600</span></div>
+          <div class="price-row"><span class="price-label">Surface prep</span><span class="price-val" id="prep">—</span></div>
+          <div class="price-row"><span class="price-label">Design & concept</span><span class="price-val" id="design">$400</span></div>
+          <div class="price-row total"><span>Estimated total</span><span id="total">$1,000</span></div>
+          <div class="price-row"><span class="price-label" style="font-size:11px;">Timeline estimate</span><span class="price-val" id="timeline" style="font-size:11px;">4–6 days</span></div>
+        </div>
+      </div>
+      <div class="ai-section">
+        <div class="ai-label"><i class="ti ti-sparkles" aria-hidden="true"></i> AI pitch paragraph</div>
+        <div class="ai-output" id="aiOutput">
+          <span class="ai-loading">Fill in the details above and click "Generate pitch" to auto-write your opening proposal paragraph...</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-crm" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Contacts</span>
+        <button class="btn btn-primary" onclick="sendPrompt('Help me draft a cold outreach email to a new mural client in Medford Oregon as QuarkForce / JawsAtak47 ↗')"><i class="ti ti-plus" aria-hidden="true"></i> Draft outreach ↗</button>
+      </div>
+      <div class="crm-list">
+        <div class="crm-card">
+          <div class="crm-avatar" style="background:#EEEDFE;color:#3C3489;">PH</div>
+          <div class="crm-info">
+            <div class="crm-name">Phil</div>
+            <div class="crm-role">Parks Commissioner · Life Art program director</div>
+          </div>
+          <div class="crm-actions">
+            <span class="crm-chip badge badge-status-applied">Emailed</span>
+            <span class="crm-chip badge badge-mural">Key contact</span>
+          </div>
+        </div>
+        <div class="crm-card">
+          <div class="crm-avatar" style="background:#E1F5EE;color:#085041;">RM</div>
+          <div class="crm-info">
+            <div class="crm-name">Ryan Moon</div>
+            <div class="crm-role">Muralist · Southern Oregon · Wall Ride show</div>
+          </div>
+          <div class="crm-actions">
+            <span class="crm-chip badge badge-grant">Peer</span>
+          </div>
+        </div>
+        <div class="crm-card">
+          <div class="crm-avatar" style="background:#FAEEDA;color:#633806;">OH</div>
+          <div class="crm-info">
+            <div class="crm-name">Oh's Osaka</div>
+            <div class="crm-role">Canvas Wars sponsor · Employer</div>
+          </div>
+          <div class="crm-actions">
+            <span class="crm-chip badge badge-status-applied">Active sponsor</span>
+          </div>
+        </div>
+        <div class="crm-card">
+          <div class="crm-avatar" style="background:#FAECE7;color:#4A1B0C;">TT</div>
+          <div class="crm-info">
+            <div class="crm-name">Timeless Treasures Hub</div>
+            <div class="crm-role">Resident artist space · Sublease opportunity</div>
+          </div>
+          <div class="crm-actions">
+            <span class="crm-chip badge badge-mural">Venue</span>
+          </div>
+        </div>
+        <div class="crm-card" onclick="sendPrompt('I want to add a new contact to my CRM — walk me through what info to capture ↗')" style="cursor:pointer; border-style: dashed; justify-content: center; color: var(--color-text-tertiary);">
+          <i class="ti ti-plus" aria-hidden="true"></i>
+          <span style="font-size:13px; margin-left:8px;">Add contact</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="panel-score" class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Artist Score</span>
+      </div>
+      <div class="score-card">
+        <div class="score-big">2,140</div>
+        <div class="score-label">QuarkForce XP</div>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-label"><span>Level 4 — Working Artist</span><span>Level 5 — Pro Muralist (3,000 XP)</span></div>
+        <div class="score-bar"><div class="score-bar-fill" style="width: 71%"></div></div>
+      </div>
+      <div class="achievements">
+        <div class="achievement"><div class="ach-icon"><i class="ti ti-trophy" aria-hidden="true"></i></div><div><div class="ach-name">First Event</div><div class="ach-pts">+500 XP · Canvas Wars Y1</div></div></div>
+        <div class="achievement"><div class="ach-icon"><i class="ti ti-wall" aria-hidden="true"></i></div><div><div class="ach-name">Wall Ride Collab</div><div class="ach-pts">+300 XP · Ryan Moon show</div></div></div>
+        <div class="achievement"><div class="ach-icon"><i class="ti ti-mail" aria-hidden="true"></i></div><div><div class="ach-name">Outreach Machine</div><div class="ach-pts">+200 XP · 5 pitches sent</div></div></div>
+        <div class="achievement"><div class="ach-icon"><i class="ti ti-book" aria-hidden="true"></i></div><div><div class="ach-name">QuarkUniversity</div><div class="ach-pts">+400 XP · Class 1 launched</div></div></div>
+        <div class="achievement" style="border: 0.5px dashed var(--color-border-tertiary); opacity:0.5;"><div class="ach-icon" style="background:var(--color-background-secondary); color:var(--color-text-tertiary);"><i class="ti ti-lock" aria-hidden="true"></i></div><div><div class="ach-name">Mural Booked</div><div class="ach-pts">+500 XP · Land a paid wall</div></div></div>
+        <div class="achievement" style="border: 0.5px dashed var(--color-border-tertiary); opacity:0.5;"><div class="ach-icon" style="background:var(--color-background-secondary); color:var(--color-text-tertiary);"><i class="ti ti-plant" aria-hidden="true"></i></div><div><div class="ach-name">Grant Secured</div><div class="ach-pts">+800 XP · Win any grant</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function calcPrice() {
+  const w = parseFloat(document.getElementById('width').value) || 0;
+  const h = parseFloat(document.getElementById('height').value) || 0;
+  const surfMult = parseFloat(document.getElementById('surface').value) || 1;
+  const compMult = parseFloat(document.getElementById('complexity').value) || 1;
+  const sqft = w * h;
+  const ratePerSqft = 3 * compMult;
+  const baseCost = sqft * ratePerSqft;
+  const prepCost = sqft * (surfMult - 1) * 3;
+  const designFee = Math.round((baseCost * 0.25) / 50) * 50;
+  const total = Math.round((baseCost + prepCost + designFee) / 50) * 50;
+  const days = Math.max(1, Math.round(sqft / 60 * compMult));
+  const daysHigh = days + 2;
+  document.getElementById('sqft').textContent = sqft + ' sq ft';
+  document.getElementById('base').textContent = '$' + Math.round(baseCost).toLocaleString();
+  document.getElementById('prep').textContent = prepCost > 0 ? '+$' + Math.round(prepCost).toLocaleString() : '—';
+  document.getElementById('design').textContent = '$' + designFee.toLocaleString();
+  document.getElementById('total').textContent = '$' + total.toLocaleString();
+  document.getElementById('timeline').textContent = days + '–' + daysHigh + ' days on-wall';
+}
+
+async function generatePitch() {
+  const client = document.getElementById('client').value || 'the client';
+  const ptype = document.getElementById('ptype').value;
+  const concept = document.getElementById('concept').value || 'a bold graffiti/street art composition with QuarkForce characters';
+  const total = document.getElementById('total').textContent;
+  const timeline = document.getElementById('timeline').textContent;
+  const out = document.getElementById('aiOutput');
+  out.innerHTML = '<span class="ai-loading">Writing your pitch paragraph...</span>';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Write a compelling 3-sentence mural proposal opening paragraph for Anthony "Jaws" Vella (brand: QuarkForce / JawsAtak47), a muralist based in Medford Oregon with 20+ years in graffiti, street art, sign painting, and gold leaf (trained at LA Trade Tech). He is pitching a ${ptype} to ${client}. Concept: ${concept}. Budget range: ${total}. Timeline: ${timeline}. The tone should be professional but authentic — not corporate. Don't use the word "passion". Do not use quotation marks or headers, just the paragraph.`
+        }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.find(b => b.type === 'text')?.text || 'Could not generate — please try again.';
+    out.innerHTML = text;
+  } catch(e) {
+    out.innerHTML = '<span class="ai-loading">Error generating pitch. Check your connection and try again.</span>';
+  }
+}
+
+calcPrice();
+</script>
