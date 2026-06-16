@@ -323,13 +323,13 @@ function recalc(){
 
   // ---- timeline estimator ----
   const designDays = 2 + Math.ceil(complexity);
-  const prepDays = access > 0 ? 2 : 1;
-  const paintDays = Math.max(1, Math.ceil(area / (90 / complexity)));
+  const prepDays = access > 1 ? 2 : 1;
+  const paintDays = Math.max(1, Math.ceil(area / (95 / complexity)));
   const cureDays = complexity >= 1.9 ? 3 : 1;
 
   const rows = [
     ['Design + client approval', designDays],
-    ['Wall prep' + (access > 0 ? ' (scaffold/ladder setup)' : ''), prepDays],
+    ['Wall prep' + (access > 1 ? ' (scaffold/ladder setup)' : ''), prepDays],
     ['Painting', paintDays],
     ['Sealant cure / final walkthrough', cureDays],
   ];
