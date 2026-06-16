@@ -171,26 +171,28 @@ body{
     <div class="board">
       <div class="col">
         <div class="col-head">Interested <span class="col-count">3</span></div>
-        <div class="card"><div class="card-title">Bear Creek Park retaining wall</div><div class="card-meta"><span class="tag tag-mural">Mural</span> 40ft span</div></div>
-        <div class="card"><div class="card-title">Oregon Arts Commission grant</div><div class="card-meta"><span class="tag tag-grant">Grant</span> due Aug 1</div></div>
-        <div class="card"><div class="card-title">Rogue Valley Mall vendor slot</div><div class="card-meta"><span class="tag tag-vendor">Vendor</span> Nov fair</div></div>
+        <div class="card"><div class="card-title">pending</div><div class="card-meta"><span class="tag tag-mural">Mural</span> pending</div></div>
+        <div class="card"><div class="card-title">pending</div><div class="card-meta"><span class="tag tag-grant">Grant</span> pending</div></div>
+        <div class="card"><div class="card-title">pending</div><div class="card-meta"><span class="tag tag-vendor">Vendor</span> pending</div></div>
       </div>
       <div class="col">
         <div class="col-head">Researching <span class="col-count">2</span></div>
-        <div class="card"><div class="card-title">Oh's Osaka exterior refresh</div><div class="card-meta"><span class="tag tag-mural">Mural</span> 18ft wall</div></div>
-        <div class="card"><div class="card-title">Timeless Treasures sublease</div><div class="card-meta"><span class="tag tag-grant">Civic</span> w/ Phil</div></div>
+        <div class="card"><div class="card-title">pending</div><div class="card-meta"><span class="tag tag-mural">Mural</span> pending</div></div>
+        <div class="card"><div class="card-title">RogueArtist</div><div class="card-meta"><span class="tag tag-grant">Civic</span> w/ Phil</div></div>
       </div>
       <div class="col">
         <div class="col-head">Applying <span class="col-count">1</span></div>
-        <div class="card"><div class="card-title">Downtown Medford alley project</div><div class="card-meta"><span class="tag tag-mural">Mural</span> city RFP</div></div>
+        <div class="card"><div class="card-title">Bartlett Middleford</div><div class="card-meta"><span class="tag tag-mural">Mural</span> city RFP</div></div>
+        <div class="card"><div class="card-title">June 19 Wallride artshow</div><div class="card-meta"><span class="tag tag-mural">Live</span> city RFP</div></div>
+        <div class="card"><div class="card-title">June 20 Junetenth PearBlossom</div><div class="card-meta"><span class="tag tag-mural">Live</span> city RFP</div></div>
       </div>
       <div class="col">
         <div class="col-head">Submitted <span class="col-count">1</span></div>
-        <div class="card"><div class="card-title">Wall Ride show submission</div><div class="card-meta"><span class="tag tag-vendor">Show</span> 3 pieces</div></div>
+        <div class="card"><div class="card-title">QuarkUniversity</div><div class="card-meta"><span class="tag tag-vendor">Show</span> 3 pieces</div></div>
       </div>
       <div class="col">
         <div class="col-head">Won <span class="col-count">1</span></div>
-        <div class="card" style="border-color:rgba(139,155,126,0.4);"><div class="card-title">Canvas Wars Y1 sponsorship set</div><div class="card-meta"><span class="tag tag-grant">Sponsor</span> closed</div></div>
+        <div class="card" style="border-color:rgba(139,155,126,0.4);"><div class="card-title">Bartlett Middleford Mural</div><div class="card-meta"><span class="tag tag-grant">QuarkForce</span> closed</div></div>
       </div>
     </div>
   </div>
@@ -247,10 +249,10 @@ body{
 
         <div class="divider-label">Portfolio plates to include</div>
         <div class="portfolio-row">
-          <div class="portfolio-thumb selected" data-idx="1">The Rising<br>Slum</div>
-          <div class="portfolio-thumb selected" data-idx="2">LAgoon</div>
-          <div class="portfolio-thumb" data-idx="3">SantaJoshin<br>&amp; BugaXiangba</div>
-          <div class="portfolio-thumb" data-idx="4">Barbershop<br>mural</div>
+          <div class="portfolio-thumb selected" data-idx="1">Timeless<br>Treasures</div>
+          <div class="portfolio-thumb selected" data-idx="2">MollyWogs</div>
+          <div class="portfolio-thumb" data-idx="3">CanvasWars<br>&amp; LiveBattle</div>
+          <div class="portfolio-thumb" data-idx="4">QuarkForce<br>QuarkZine</div>
         </div>
       </div>
 
@@ -380,9 +382,9 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
   doc.text('Artist background', 20, 140);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-  doc.text('Trained in sign painting and gold leaf at LA Trade Tech under Doc Guthrie,', 20, 148);
-  doc.text('Noel B. Webber, and Joby Carter. 20+ years rooted in graffiti, skate, and hip-hop', 20, 154);
-  doc.text('culture. Operating under the QuarkForce creative umbrella, Medford, OR.', 20, 160);
+  doc.text('20+ yrs in lettering, illustration, fine art, and more in all applications', 20, 148);
+  doc.text('CanvaasWars live art battle', 20, 154);
+  doc.text('QuarkForce creative umbrella, QuarkZine, QuarkUniversity', 20, 160);
 
   doc.save('mural-pitch-' + (client || 'client').replace(/\s+/g, '-').toLowerCase() + '.pdf');
 });
