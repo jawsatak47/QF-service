@@ -106,6 +106,24 @@ body{
 }
 .divider-label::after{content:'';flex:1;height:1px;background:var(--line-paper);}
 
+/* ===== PORTFOLIO STRIP ===== */
+.portfolio-row{display:flex;gap:10px;margin-top:14px;}
+.portfolio-thumb{
+  flex:1;aspect-ratio:0.85;border-radius:8px;border:1px solid var(--line-paper);
+  background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:6px;cursor:pointer;transition:all .15s ease;overflow:hidden;
+}
+.portfolio-thumb .plate-img{
+  width:100%;height:68%;object-fit:cover;border-radius:4px;background-color:var(--paper-dim);
+}
+.portfolio-thumb .plate-label{
+  font-size:10px;font-weight:600;color:var(--ink);text-align:center;line-height:1.2;margin-top:4px;
+}
+.portfolio-thumb.selected{
+  border:2px solid var(--coral);box-shadow:0 2px 8px rgba(216,90,48,0.2);
+}
+.portfolio-thumb:not(.selected){opacity:0.5;}
+
 /* ticket right: live calc */
 .calc-line{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
 .calc-line.total{border-bottom:none;border-top:1px solid var(--line);margin-top:6px;padding-top:14px;}
@@ -127,16 +145,6 @@ body{
   letter-spacing:0.02em;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;
 }
 .btn-export:hover{background:#C24E27;}
-
-/* ===== portfolio strip ===== */
-.portfolio-row{display:flex;gap:8px;margin-top:14px;}
-.portfolio-thumb{
-  flex:1;aspect-ratio:1;border-radius:6px;border:1px solid var(--line-paper);
-  display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink-soft);
-  background:repeating-linear-gradient(45deg, #EDE8DA, #EDE8DA 6px, #E4DECC 6px, #E4DECC 12px);
-  text-align:center;padding:4px;
-}
-.portfolio-thumb.selected{border:2px solid var(--coral);box-shadow:0 0 0 1px var(--coral);}
 
 @media (max-width:760px){
   .ticket-wrap{grid-template-columns:1fr;}
@@ -249,10 +257,22 @@ body{
 
         <div class="divider-label">Portfolio plates to include</div>
         <div class="portfolio-row">
-          <div class="portfolio-thumb selected" data-idx="1">Timeless<br>Treasures</div>
-          <div class="portfolio-thumb selected" data-idx="2">MollyWogs</div>
-          <div class="portfolio-thumb" data-idx="3">CanvasWars<br>&amp; LiveBattle</div>
-          <div class="portfolio-thumb" data-idx="4">QuarkForce<br>QuarkZine</div>
+          <div class="portfolio-thumb selected" data-idx="1">
+            <img class="plate-img" src="timeless-treasures.jpg" alt="Timeless Treasures">
+            <div class="plate-label">Timeless<br>Treasures</div>
+          </div>
+          <div class="portfolio-thumb selected" data-idx="2">
+            <img class="plate-img" src="mollywogs.jpg" alt="MollyWogs">
+            <div class="plate-label">MollyWogs</div>
+          </div>
+          <div class="portfolio-thumb" data-idx="3">
+            <img class="plate-img" src="cws.png" alt="CanvasWars & LiveBattle">
+            <div class="plate-label">CanvasWars<br>&amp; LiveBattle</div>
+          </div>
+          <div class="portfolio-thumb" data-idx="4">
+            <img class="plate-img" src="quarkforce.jpg" alt="QuarkForce QuarkZine">
+            <div class="plate-label">QuarkForce<br>QuarkZine</div>
+          </div>
         </div>
       </div>
 
@@ -269,7 +289,7 @@ body{
           <div id="timeline-rows"></div>
         </div>
 
-        <button class="btn-export" id="exportBtn"><i class="ti ti-file-download"></i> Export pitch deck PDF</button>
+        <button class="btn-export" id="exportBtn">Export pitch deck PDF</button>
       </div>
     </div>
   </div>
