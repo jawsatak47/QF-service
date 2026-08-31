@@ -368,6 +368,16 @@ function recalc(){
 ids.forEach(id => document.getElementById(id).addEventListener('input', recalc));
 recalc();
 
+// ---- Helper function to convert <img> to base64 DataURL for jsPDF ----
+function getBase64Image(img) {
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth || img.width;
+  canvas.height = img.naturalHeight || img.height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  return canvas.toDataURL("image/jpeg");
+}
+
 // ---- PDF export ----
 document.getElementById('exportBtn').addEventListener('click', () => {
   const { jsPDF } = window.jspdf;
@@ -377,6 +387,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   const total = document.getElementById('out-total').textContent;
   const area = document.getElementById('out-area').textContent;
 
+  // Header & Job Specs
   doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
   doc.text('JawsAtak — Client Proposal', 20, 25);
   doc.setFontSize(11); doc.setFont('helvetica', 'normal');
@@ -391,6 +402,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   doc.text('Wall area: ' + area, 20, 68);
   doc.text('Quoted total: ' + total, 20, 75);
 
+  // Timeline
   doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
   doc.text('Timeline', 20, 90);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
@@ -399,13 +411,43 @@ document.getElementById('exportBtn').addEventListener('click', () => {
   );
   tlText.forEach((line, i) => doc.text(line, 20, 98 + i * 7));
 
+  // --- Add Selected Portfolio Plates ---
+  const selectedThumbs = document.querySelectorAll('.portfolio-thumb.selected');
+  let startY = 140;
+
+  if (selectedThumbs.length > 0) {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+    doc.text('Selected Portfolio Samples', 20, startY);
+    startY += 8;
+
+    let posX = 20;
+    const imgSize = 35; // 35mm x 35mm preview size
+    const gap = 8;
+
+    selectedThumbs.forEach(thumb => {
+      const imgEl = thumb.querySelector('.plate-img');
+      if (imgEl) {
+        try {
+          const imgData = getBase64Image(imgEl);
+          doc.addImage(imgData, 'JPEG', posX, startY, imgSize, imgSize);
+          posX += imgSize + gap;
+        } catch (e) {
+          console.warn('Could not load image into PDF due to CORS or path issue:', e);
+        }
+      }
+    });
+
+    startY += imgSize + 15; // Move section down after rendering images
+  }
+
+  // Artist Background & Footer
   doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
-  doc.text('Artist background', 20, 140);
+  doc.text('Artist background', 20, startY);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
-  doc.text('20+ yrs in lettering, illustration, fine art, and more in all applications', 20, 148);
-  doc.text('CanvaasWars live art battle', 20, 154);
-  doc.text('QuarkForce creative umbrella, QuarkZine, QuarkUniversity', 20, 160);
-  doc.text('541.292.2615, @jawsatak, @quark_force', 20, 163);
+  doc.text('20+ yrs in lettering, illustration, fine art, and more in all applications', 20, startY + 8);
+  doc.text('CanvasWars live art battle', 20, startY + 14);
+  doc.text('QuarkForce creative umbrella, QuarkZine, QuarkUniversity', 20, startY + 20);
+  doc.text('541.292.2615, @jawsatak, @quark_force', 20, startY + 26);
 
   doc.save('mural-pitch-' + (client || 'client').replace(/\s+/g, '-').toLowerCase() + '.pdf');
 });
